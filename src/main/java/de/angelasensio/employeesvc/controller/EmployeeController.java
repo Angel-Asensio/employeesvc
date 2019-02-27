@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import de.angelasensio.employeesvc.data.Employee;
 import de.angelasensio.employeesvc.event.EmployeeEvent;
@@ -26,6 +27,7 @@ import de.angelasensio.employeesvc.service.MessageProducer;
 @RestController
 @RequestMapping("/employee")
 @RequiredArgsConstructor
+@Slf4j
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -34,6 +36,7 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
         requireNonNull(employee, "employee cannot be null");
+        LOG.info("createEmployee: {}", employee.toString());
         Employee savedEmployee = employeeService.create(employee);
 
         sendEventToMessageProducer(savedEmployee.getId(), "create");

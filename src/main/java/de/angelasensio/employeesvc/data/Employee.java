@@ -4,11 +4,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +38,8 @@ public class Employee {
     private String lastName;
 
     @Column
+    @Basic
+    @Temporal(TemporalType.DATE)
     private Date birthday;
 
     @OneToMany(mappedBy = "employee")
