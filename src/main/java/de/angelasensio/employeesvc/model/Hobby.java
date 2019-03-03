@@ -1,35 +1,33 @@
-package de.angelasensio.employeesvc.data;
+package de.angelasensio.employeesvc.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Entity
-@Table(name = "HOBBY")
-@NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@Entity
 public class Hobby {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn
     private Employee employee;
+
+    public Hobby() {
+    }
 
 }

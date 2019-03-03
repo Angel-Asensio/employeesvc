@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.net.URI;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +20,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import de.angelasensio.employeesvc.data.Employee;
+import de.angelasensio.employeesvc.dto.EmployeeDto;
 import de.angelasensio.employeesvc.event.EmployeeEvent;
+import de.angelasensio.employeesvc.model.Employee;
 import de.angelasensio.employeesvc.service.EmployeeService;
+import de.angelasensio.employeesvc.service.MappingService;
 import de.angelasensio.employeesvc.service.MessageProducer;
 
 @RestController
@@ -31,12 +34,15 @@ import de.angelasensio.employeesvc.service.MessageProducer;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final MappingService mappingService;
     private final MessageProducer messageProducer;
 
     @PostMapping
-    public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
-        requireNonNull(employee, "employee cannot be null");
-        LOG.info("createEmployee: {}", employee.toString());
+    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto employeeDto) {
+        requireNonNull(employeeDto, "employeeDto cannot be null");
+        LOG.info("createEmployee: {}", employeeDto.toString());
+        Employee employee = mappingService.convertToEntity(employeeDto);
+
         Employee savedEmployee = employeeService.create(employee);
 
         sendEventToMessageProducer(savedEmployee.getId(), "create");
@@ -49,16 +55,20 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public Employee retrieveEmployee(@PathVariable UUID id) {
+    public ResponseEntity<EmployeeDto> retrieveEmployee(@PathVariable UUID id) {
         requireNonNull(id, "UUID cannot be null");
-        return employeeService.employeeForUUID(id);
+        LOG.info("retrieveEmployee: {}", id);
+        Employee foundEmployee = employeeService.employeeForUUID(id);
+        EmployeeDto employeeDto = mappingService.convertToDto(foundEmployee);
+        return new ResponseEntity<>(employeeDto, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEmployee(@RequestBody Employee employee, @PathVariable UUID id) {
-        requireNonNull(employee, "employee cannot be null");
+    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDto employeeDto, @PathVariable UUID id) {
+        requireNonNull(employeeDto, "employeeDto cannot be null");
         requireNonNull(id, "UUID cannot be null");
-
+        LOG.info("updateEmployee: {} with id: {}", employeeDto.toString(), id);
+        Employee employee = mappingService.convertToEntity(employeeDto);
         boolean wasUpdated = employeeService.updateEmployee(employee, id);
 
         if (!wasUpdated) {
@@ -74,12 +84,11 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable UUID id) {
         requireNonNull(id, "UUID cannot be null");
-
+        LOG.info("deleteEmployee: {}", id);
         employeeService.deleteEmployee(id);
 
         sendEventToMessageProducer(id, "delete");
     }
-
 
     private void sendEventToMessageProducer(final UUID uuid, final String operation) {
         EmployeeEvent employeeEvent = EmployeeEvent.builder()

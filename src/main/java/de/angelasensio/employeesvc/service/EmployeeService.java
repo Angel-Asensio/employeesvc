@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import de.angelasensio.employeesvc.data.Employee;
+import de.angelasensio.employeesvc.model.Employee;
 import de.angelasensio.employeesvc.repository.EmployeeRepository;
 import de.angelasensio.employeesvc.util.EmployeeNotFoundException;
 
@@ -18,7 +18,12 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     public Employee create(final Employee employee) {
-        return employeeRepository.save(employee);
+        Employee employeeToSave = new Employee(employee.getEmail(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getBirthday(),
+                employee.getHobbies());
+        return employeeRepository.save(employeeToSave);
     }
 
     public Employee employeeForUUID(final UUID uuid) {
@@ -42,7 +47,6 @@ public class EmployeeService {
             return false;
         }
 
-        employee.setId(uuid);
         employeeRepository.save(employee);
         return true;
     }

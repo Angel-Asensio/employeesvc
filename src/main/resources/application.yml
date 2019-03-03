@@ -10,7 +10,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    generate-ddl: true
   kafka:
     producer:
       properties:
         spring.json.add.type.header: false
+  h2:
+    console:
+      enabled:  true
+      path: /console
