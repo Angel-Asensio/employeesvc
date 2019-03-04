@@ -17,12 +17,19 @@ The application.yml assumes the following kafka configuration:
 kafka:
   brokerAddress: localhost:9092
   topic: employee
+  
+A topic 'employee' should be created on Kafka.
 
 So a kafka instance should work locally on port 9092. Of course, that is completely configurable.
 
-How to execute for both services:
+How to execute (both services):
 	mvn spring-boot:run
+
+Please, start first the employeesvc, as this is the service where the H2 database is defined.
 
 ## Extra dependencies
 I have used lombok for some boilerplate code. 
 ModelMapper for Entity-Dtos Mapping
+
+## Extra notes
+Unit tests have been not created, because the time to develop everything was too much for a "test". I would not deliver a real, production application without unit tests, but this is not a commercial application. The whole system has been tested locally and works as it is expected. There could be corner cases that have been not covered, but again I consider this to be only a test. 
