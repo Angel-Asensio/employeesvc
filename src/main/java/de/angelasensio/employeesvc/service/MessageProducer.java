@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import de.angelasensio.employeesvc.config.ConfigProperties;
 import de.angelasensio.employeesvc.event.EmployeeEvent;
 
 @Slf4j
@@ -15,7 +14,6 @@ import de.angelasensio.employeesvc.event.EmployeeEvent;
 @RequiredArgsConstructor
 public class MessageProducer {
 
-    private final ConfigProperties configProperties;
     private final KafkaTemplate<String, ?> employeeKafkaTemplate;
 
     public void sendEvent(final EmployeeEvent event) {
